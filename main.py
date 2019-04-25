@@ -25,7 +25,10 @@ def read_relations(db, openfile):
     """
     pass
     # code written with guidance from https://realpython.com/python-csv/#parsing-csv-files-with-pythons-built-in-csv-library
-    readdata = csv.DictReader(openfile, delimiter=',')
+    # this function uses the csv library to read relations.csv file
+    # then insert data into relations table line by line
+
+    readdata = csv.DictReader(openfile)
     for row in readdata:
         db.execute('''insert into relations(product, location) values (?,?)''',(row['product'], row['location']))
         db.commit()
@@ -45,7 +48,9 @@ def read_locations(db, openfile):
     """
     pass
     # code written with guidance from https://realpython.com/python-csv/#parsing-csv-files-with-pythons-built-in-csv-library
-    # this function uses the csv library to read and
+    # this function uses the csv library to read locations.csv file
+    # then insert data into locations table line by line
+
     readData = csv.DictReader(openfile)
     for row in readData:
         db.execute('''insert into locations values (?,?,?,?,?)''',(row['id'], row['number'], row['street'], row['city'], row['state']))
@@ -68,6 +73,10 @@ def read_stock(db, openfile):
     # code written with guidance from the following sources
     # https://www.crummy.com/software/BeautifulSoup/bs4/doc/#navigating-using-tag-names
     # http://www.compjour.org/warmups/govt-text-releases/intro-to-bs4-lxml-parsing-wh-press-briefings/
+    # finds the necessary information by first navigating to the required tag
+    # then stripping the output strings to only get necessary information
+    # finally data is inserted into the products table line by line
+
     soup = BeautifulSoup(openfile.read(), 'html.parser')
     getContent = soup.find_all("div", class_="product")
 
@@ -102,10 +111,13 @@ def report(db, openfile):
     >>>     report(db, open('report.csv', 'w'))
     """
     pass
-    #code written with guidance from the following sources
+    # code written with guidance from the following sources
     # https://www.sqlite.org/docs.html
     # https://sqliteonline.com/
     # https://realpython.com/python-csv/#parsing-csv-files-with-pythons-built-in-csv-library
+    # first retrieves the content of the sql operation to get the desired information
+    # then uses csv library to open new file named report.csv
+    # then populates the file by iterating through the sql result
 
     content = db.execute('''SELECT products.description, products.price, products.currency, products.stock, locations.number||', '||locations.street||', '||locations.city||', '||locations.state As "location" FROM 'products' join 'locations' join 'relations' where relations.product = products.id and relations.location = locations.id order by products.price asc;''')
     csvmaker = csv.writer(openfile)
