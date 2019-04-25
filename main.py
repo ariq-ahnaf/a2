@@ -25,10 +25,9 @@ def read_relations(db, openfile):
     """
     pass
     # code written with guidance from https://realpython.com/python-csv/#parsing-csv-files-with-pythons-built-in-csv-library
-    reader = csv.DictReader(openfile, delimiter=',')
-    database = db
-    for row in reader:
-        database.execute('''insert into relations(product, location) values (?,?)''',(row['product'], row['location']))
+    readdata = csv.DictReader(openfile, delimiter=',')
+    for row in readdata:
+        db.execute('''insert into relations(product, location) values (?,?)''',(row['product'], row['location']))
         db.commit()
 
 
@@ -46,8 +45,9 @@ def read_locations(db, openfile):
     """
     pass
     # code written with guidance from https://realpython.com/python-csv/#parsing-csv-files-with-pythons-built-in-csv-library
-    reader = csv.DictReader(openfile, delimiter=',')
-    for row in reader:
+    # this function uses the csv library to read and
+    readData = csv.DictReader(openfile)
+    for row in readData:
         db.execute('''insert into locations values (?,?,?,?,?)''',(row['id'], row['number'], row['street'], row['city'], row['state']))
         db.commit()
 
@@ -65,7 +65,9 @@ def read_stock(db, openfile):
     >>>     read_stock(db, f)
     """
     pass
-
+    # code written with guidance from the following sources
+    # https://www.crummy.com/software/BeautifulSoup/bs4/doc/#navigating-using-tag-names
+    # http://www.compjour.org/warmups/govt-text-releases/intro-to-bs4-lxml-parsing-wh-press-briefings/
     soup = BeautifulSoup(openfile.read(), 'html.parser')
     getContent = soup.find_all("div", class_="product")
 
@@ -105,11 +107,11 @@ def report(db, openfile):
     # https://sqliteonline.com/
     # https://realpython.com/python-csv/#parsing-csv-files-with-pythons-built-in-csv-library
 
-    c = db.execute('''SELECT products.description, products.price, products.currency, products.stock, locations.number||', '||locations.street||', '||locations.city||', '||locations.state As "location" FROM 'products' join 'locations' join 'relations' where relations.product = products.id and relations.location = locations.id order by products.price asc;''')
-    writer = csv.writer(openfile)
-    writer.writerow(['description','price','currency','stock','location'])
-    for row in c:
-        writer.writerow(row)
+    content = db.execute('''SELECT products.description, products.price, products.currency, products.stock, locations.number||', '||locations.street||', '||locations.city||', '||locations.state As "location" FROM 'products' join 'locations' join 'relations' where relations.product = products.id and relations.location = locations.id order by products.price asc;''')
+    csvmaker = csv.writer(openfile)
+    csvmaker.writerow(['description','price','currency','stock','location'])
+    for row in content:
+        csvmaker.writerow(row)
 
 
 def main():
@@ -138,3 +140,7 @@ def main():
 # Do not edit the code below
 if __name__=='__main__':
     main()
+# Miscellaneous References
+# http://pwp.stevecassidy.net/python/pysqlite.html
+# https://www.youtube.com/channel/UCOEXVTLuczZSVPhsr9TwyDA
+# https://medium.freecodecamp.org/how-to-scrape-websites-with-python-and-beautifulsoup-5946935d93fe
