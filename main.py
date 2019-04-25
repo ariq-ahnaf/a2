@@ -137,15 +137,16 @@ def main():
 
     # Write your code below
 
+    # populating the relations table
     with open('relations.csv') as f:
         read_relations(db, f)
-
+    # populating the locations table
     with open('locations.csv') as f:
         read_locations(db, f)
-
+    # populating the products table
     with open('index.html', encoding='utf-8') as f:
         read_stock(db, f)
-
+    # generating the report.csv file
     with open('report.csv', 'w') as f:
         report(db, open('report.csv','w'))
 
