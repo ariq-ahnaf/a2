@@ -26,8 +26,9 @@ def read_relations(db, openfile):
     pass
     # code written with guidance from https://realpython.com/python-csv/#parsing-csv-files-with-pythons-built-in-csv-library
     reader = csv.DictReader(openfile, delimiter=',')
+    database = db
     for row in reader:
-        db.execute('''insert into relations(product, location) values (?,?)''',(row['product'], row['location']))
+        database.execute('''insert into relations(product, location) values (?,?)''',(row['product'], row['location']))
         db.commit()
 
 
@@ -99,6 +100,11 @@ def report(db, openfile):
     >>>     report(db, open('report.csv', 'w'))
     """
     pass
+    #code written with guidance from the following sources
+    # https://www.sqlite.org/docs.html
+    # https://sqliteonline.com/
+    # https://realpython.com/python-csv/#parsing-csv-files-with-pythons-built-in-csv-library
+
     c = db.execute('''SELECT products.description, products.price, products.currency, products.stock, locations.number||', '||locations.street||', '||locations.city||', '||locations.state As "location" FROM 'products' join 'locations' join 'relations' where relations.product = products.id and relations.location = locations.id order by products.price asc;''')
     writer = csv.writer(openfile)
     writer.writerow(['description','price','currency','stock','location'])
