@@ -99,6 +99,12 @@ def report(db, openfile):
     >>>     report(db, open('report.csv', 'w'))
     """
     pass
+    c = db.execute('''SELECT products.description, products.price, products.currency, products.stock, locations.number||', '||locations.street||', '||locations.city||', '||locations.state As "location" FROM 'products' join 'locations' join 'relations' where relations.product = products.id and relations.location = locations.id order by products.price asc;''')
+    writer = csv.writer(openfile)
+    writer.writerow(['description','price','currency','stock','location'])
+    for row in c:
+        writer.writerow(row)
+
 
 def main():
     """Execute the main code that calls all functions
@@ -120,6 +126,8 @@ def main():
     with open('index.html', encoding='utf-8') as f:
         read_stock(db, f)
 
+    with open('report.csv', 'w') as f:
+        report(db, open('report.csv','w'))
 
 # Do not edit the code below
 if __name__=='__main__':
