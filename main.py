@@ -25,6 +25,11 @@ def read_relations(db, openfile):
     """
     pass
 
+    reader = csv.DictReader(openfile, delimiter=',')
+    for row in reader:
+        db.execute('''insert into relations(product, location) values (?,?)''',(row['product'], row['location']))
+        db.commit()
+
 
 def read_locations(db, openfile):
     """Store the locations listed in the open file into the database
@@ -40,6 +45,11 @@ def read_locations(db, openfile):
     """
     pass
 
+    reader = csv.DictReader(openfile, delimiter=',')
+    for row in reader:
+        db.execute('''insert into locations values (?,?,?,?,?)''',(row['id'], row['number'], row['street'], row['city'], row['state']))
+        db.commit()
+
 
 def read_stock(db, openfile):
     """Read the products from the open file and store them in the database
@@ -54,6 +64,21 @@ def read_stock(db, openfile):
     >>>     read_stock(db, f)
     """
     pass
+
+    soup = BeautifulSoup(openfile.read(), 'html.parser')
+    getContent = soup.find_all("div", class_="product")
+
+    for item in getContent:
+        getID = item.find_all("a")[0]
+        id = getID.attrs["href"].split('/')[-1]
+        description = getID.contents[0]
+        getStock = item.find_all("div", class_="inventory")[0].contents[0]
+        stock = getStock.split(' ')[0]
+        getValue = item.find_all("div", class_="cost")[0].contents[0]
+        currency = getValue[0:1]
+        price = getValue[1:]
+        db.execute('''insert into products values(?,?,?,?,?)''', (id, description, stock, price, currency))
+        db.commit()
 
 
 def report(db, openfile):
@@ -85,6 +110,16 @@ def main():
     create_tables(db)
 
     # Write your code below
+
+    with open('relations.csv') as f:
+        read_relations(db, f)
+
+    with open('locations.csv') as f:
+        read_locations(db, f)
+
+    with open('index.html', encoding='utf-8') as f:
+        read_stock(db, f)
+
 
 # Do not edit the code below
 if __name__=='__main__':
