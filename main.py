@@ -24,7 +24,7 @@ def read_relations(db, openfile):
     >>>    read_relations(db, f)
     """
     pass
-
+    # code written with guidance from https://realpython.com/python-csv/#parsing-csv-files-with-pythons-built-in-csv-library
     reader = csv.DictReader(openfile, delimiter=',')
     for row in reader:
         db.execute('''insert into relations(product, location) values (?,?)''',(row['product'], row['location']))
@@ -44,7 +44,7 @@ def read_locations(db, openfile):
     >>>     read_locations(db, f)
     """
     pass
-
+    # code written with guidance from https://realpython.com/python-csv/#parsing-csv-files-with-pythons-built-in-csv-library
     reader = csv.DictReader(openfile, delimiter=',')
     for row in reader:
         db.execute('''insert into locations values (?,?,?,?,?)''',(row['id'], row['number'], row['street'], row['city'], row['state']))
